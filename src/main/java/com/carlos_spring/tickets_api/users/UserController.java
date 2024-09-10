@@ -54,12 +54,13 @@ public class UserController {
 		// find user
 		Optional<User> userToUpdate = userRepository.findById(id);
 		
-		// a user_id matches path variable id and username and password are present
+		// a user_id matches path variable id and user name 
 		if (userToUpdate.isPresent() & newUsername != null) {
 			User userWithNewUsername = userToUpdate.get();
 			userWithNewUsername.setUsername(newUsername);
 			userRepository.save(userWithNewUsername);
 		}
+		// a user_id matches path variable id and password
 		if (userToUpdate.isPresent() & newPassword != null) {
 			User userWithNewPassword = userToUpdate.get();
 			userWithNewPassword.setPassword(newPassword);

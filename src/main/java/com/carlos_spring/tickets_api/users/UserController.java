@@ -43,8 +43,11 @@ public class UserController {
 	
 	// ONLY WITH API AUTH KEY
 	@GetMapping("/user/{id}")
-	public Optional<User> getUserById(@PathVariable Integer id) {
-		return userRepository.findById(id);
+	public ResponseEntity<Object> getUserById(@PathVariable Integer id) {
+		if (userRepository.findById(id).isPresent()) {
+			return new ResponseEntity<>(userRepository.findById(id).get(), HttpStatus.OK);
+		}
+		return new ResponseEntity<>("User does not exist.", HttpStatus.BAD_REQUEST);
 	}
 	
 	@PatchMapping(value = "/user/{id}")
@@ -55,6 +58,10 @@ public class UserController {
 		
 		// find user
 		Optional<User> userToUpdate = userRepository.findById(id);
+		if (userToUpdate.isEmpty()) {
+			return new ResponseEntity<>("User does not exist. ", HttpStatus.OK);
+		}
+		
 		
 		// a user_id matches path variable id and user name 
 		if (userToUpdate.isPresent() & newUsername != null) {

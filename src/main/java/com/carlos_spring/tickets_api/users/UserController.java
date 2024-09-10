@@ -8,10 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -71,7 +73,32 @@ public class UserController {
 		
 	}
 	
+	@PutMapping(value = "/user/{id}")
+	public ResponseEntity<Object> replaceUser(@PathVariable Integer id, @RequestBody User user) {
+		
+		// find user
+		Optional<User> userToChange = userRepository.findById(id);
+		// if user found
+		if (userToChange.isPresent() & user != null) {
+			userToChange.get().setEmail(user.getEmail());
+			userToChange.get().setUsername(user.getUsername());
+			userToChange.get().setPassword(user.getPassword());
+			userRepository.save(userToChange.get());
+			return new ResponseEntity<>(userToChange.get(),HttpStatus.ACCEPTED);
+		}
+		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+	}
 	
+	@DeleteMapping(value="/user/{id}")
+	public ResponseEntity<Object> deleteUser(@PathVariable Integer id) {
+		// find user
+		Optional<User> userToChange = userRepository.findById(id);
+		if (userToChange.isPresent()) {
+			userRepository.delete(userToChange.get());
+			return new ResponseEntity<>(userToChange.get(),HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+	}
 	
 	public UserRepository getUserRepository() {
 		return userRepository;
